@@ -8,33 +8,88 @@
 
 <body>
 <div class="container">
-    <h1 class="mt-5 text-center">Create New Product</h1>
-    <br />
-    <form th:action="@{/products/save}" th:object="${product}" method="post">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="productName" class="form-label">Product Name:</label>
-                    <input type="text" id="productName" class="form-control" th:field="*{name}" />
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h1 class="text-center mb-0">새 상품 등록</h1>
                 </div>
-                <div class="mb-3">
-                    <label for="brand" class="form-label">Brand:</label>
-                    <input type="text" id="brand" class="form-control" th:field="*{brand}" />
-                </div>
-                <div class="mb-3">
-                    <label for="madeIn" class="form-label">Made In:</label>
-                    <input type="text" id="madeIn" class="form-control" th:field="*{madeIn}" />
-                </div>
-                <div class="mb-3">
-                    <label for="price" class="form-label">Price:</label>
-                    <input type="text" id="price" class="form-control" th:field="*{price}" />
-                </div>
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                <div class="card-body">
+                    <form th:action="@{/products/save}" th:object="${product}" method="post">
+                        <!-- 상품명 -->
+                        <div class="mb-3">
+                            <label for="productName" class="form-label">상품명 <span class="text-danger">*</span></label>
+                            <input type="text" 
+                                   id="productName" 
+                                   class="form-control" 
+                                   th:field="*{name}"
+                                   th:class="${#fields.hasErrors('name')} ? 'form-control is-invalid' : 'form-control'"
+                                   placeholder="상품명을 입력하세요" />
+                            <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback">
+                                <span th:errors="*{name}">상품명 오류</span>
+                            </div>
+                        </div>
+
+                        <!-- 브랜드 -->
+                        <div class="mb-3">
+                            <label for="brand" class="form-label">브랜드 <span class="text-danger">*</span></label>
+                            <input type="text" 
+                                   id="brand" 
+                                   class="form-control" 
+                                   th:field="*{brand}"
+                                   th:class="${#fields.hasErrors('brand')} ? 'form-control is-invalid' : 'form-control'"
+                                   placeholder="브랜드명을 입력하세요" />
+                            <div th:if="${#fields.hasErrors('brand')}" class="invalid-feedback">
+                                <span th:errors="*{brand}">브랜드 오류</span>
+                            </div>
+                        </div>
+
+                        <!-- 제조국 -->
+                        <div class="mb-3">
+                            <label for="madeIn" class="form-label">제조국 <span class="text-danger">*</span></label>
+                            <input type="text" 
+                                   id="madeIn" 
+                                   class="form-control" 
+                                   th:field="*{madeIn}"
+                                   th:class="${#fields.hasErrors('madeIn')} ? 'form-control is-invalid' : 'form-control'"
+                                   placeholder="제조국을 입력하세요" />
+                            <div th:if="${#fields.hasErrors('madeIn')}" class="invalid-feedback">
+                                <span th:errors="*{madeIn}">제조국 오류</span>
+                            </div>
+                        </div>
+
+                        <!-- 가격 -->
+                        <div class="mb-3">
+                            <label for="price" class="form-label">가격 <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">₩</span>
+                                <input type="number" 
+                                       id="price" 
+                                       class="form-control" 
+                                       th:field="*{price}"
+                                       th:class="${#fields.hasErrors('price')} ? 'form-control is-invalid' : 'form-control'"
+                                       placeholder="0.00"
+                                       min="0.01"
+                                       step="0.01" />
+                                <div th:if="${#fields.hasErrors('price')}" class="invalid-feedback">
+                                    <span th:errors="*{price}">가격 오류</span>
+                                </div>
+                            </div>
+                            <div class="form-text">가격은 0보다 큰 값을 입력해주세요.</div>
+                        </div>
+
+                        <!-- 버튼 -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a th:href="@{/products}" class="btn btn-secondary me-md-2">취소</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> 저장
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </form>
+    </div>
 </div>
 
 <!-- Bootstrap JS 삽입 -->

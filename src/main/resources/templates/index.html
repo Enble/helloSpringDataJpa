@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 
 <head th:insert="~{common :: commonHead}">
   <title>Product Manager</title>
@@ -8,34 +9,82 @@
 
 <body>
 <div class="container">
-  <h1 class="mt-5">Product List</h1>
-  <a class="btn btn-primary mb-3" th:href="@{/products/new}">Create New Product</a>
+  <!-- 권한이 없는 경우 로그인 페이지로 리다이렉트 -->
+  <div sec:authorize="isAnonymous()">
+    <div class="alert alert-warning mt-5">
+      <h4>로그인이 필요합니다</h4>
+      <p>상품 목록을 보려면 로그인해주세요.</p>
+      <a class="btn btn-primary" th:href="@{/login}">로그인</a>
+    </div>
+  </div>
 
-  <table class="table table-bordered">
-    <thead>
-    <tr>
-      <th>Product ID</th>
-      <th>Name</th>
-      <th>Brand</th>
-      <th>Made In</th>
-      <th>Price</th>
-      <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="product : ${listProducts}">
-      <td th:text="${product.id}">Product ID</td>
-      <td th:text="${product.name}">Name</td>
-      <td th:text="${product.brand}">Brand</td>
-      <td th:text="${product.madeIn}">Made in</td>
-      <td th:text="${product.price}">Price</td>
-      <td>
-        <a class="btn btn-primary btn-sm" th:href="@{'/products/edit/' + ${product.id}}">Edit</a>
-        <a class="btn btn-danger btn-sm" th:href="@{'/products/delete/' + ${product.id}}">Delete</a>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+  <!-- 인증된 사용자만 볼 수 있는 영역 -->
+  <div sec:authorize="isAuthenticated()">
+    <!-- 사용자 환영 메시지 -->
+    <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
+      <div>
+        <p class="mb-0">
+          환영합니다, <strong sec:authentication="principal.username">User</strong>님!
+          <span sec:authorize="hasRole('ADMIN')" class="badge bg-danger ms-2">
+            <i class="fas fa-crown"></i> ADMIN
+          </span>
+          <span sec:authorize="hasRole('USER') and !hasRole('ADMIN')" class="badge bg-primary ms-2">
+            <i class="fas fa-user"></i> USER
+          </span>
+        </p>
+        <small class="text-muted" sec:authorize="hasRole('USER') and !hasRole('ADMIN')">
+          상품 목록 조회만 가능합니다.
+        </small>
+        <small class="text-muted" sec:authorize="hasRole('ADMIN')">
+          모든 상품 관리 기능을 사용할 수 있습니다.
+        </small>
+      </div>
+      <div>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}" class="btn btn-outline-info btn-sm me-2">
+          <i class="fas fa-tachometer-alt"></i> 관리자 대시보드
+        </a>
+        <form th:action="@{/logout}" method="post" class="d-inline">
+          <input type="submit" value="로그아웃" class="btn btn-outline-secondary btn-sm" />
+        </form>
+      </div>
+    </div>
+
+    <h1 class="mt-4 mb-4">Product List</h1>
+
+    <!-- ADMIN 권한만 상품 생성 버튼을 볼 수 있음 -->
+    <div sec:authorize="hasRole('ADMIN')" class="mb-3">
+      <a class="btn btn-primary" th:href="@{/products/new}">Create New Product</a>
+    </div>
+
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th>Product ID</th>
+        <th>Name</th>
+        <th>Brand</th>
+        <th>Made In</th>
+        <th>Price</th>
+        <!-- ADMIN 권한만 Actions 컬럼을 볼 수 있음 -->
+        <th sec:authorize="hasRole('ADMIN')">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="product : ${listProducts}">
+        <td th:text="${product.id}">Product ID</td>
+        <td th:text="${product.name}">Name</td>
+        <td th:text="${product.brand}">Brand</td>
+        <td th:text="${product.madeIn}">Made in</td>
+        <td th:text="${product.price}">Price</td>
+        <!-- ADMIN 권한만 Edit/Delete 버튼을 볼 수 있음 -->
+        <td sec:authorize="hasRole('ADMIN')">
+          <a class="btn btn-primary btn-sm" th:href="@{'/products/edit/' + ${product.id}}">Edit</a>
+          <a class="btn btn-danger btn-sm" th:href="@{'/products/delete/' + ${product.id}}"
+             onclick="return confirm('Are you sure you want to delete this product?')">Delete</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <!-- Bootstrap JS fragment 삽입 -->

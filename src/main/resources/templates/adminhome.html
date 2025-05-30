@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head th:insert="~{common :: commonHead}">
+  <title>Admin Dashboard</title>
+</head>
+
+<body>
+  <div class="container">
+    <!-- 관리자 헤더 -->
+    <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
+      <div>
+        <h1 class="mb-0">관리자 대시보드</h1>
+        <p class="text-muted mb-0">
+          환영합니다, <strong sec:authentication="principal.username">Admin</strong>님
+        </p>
+      </div>
+      <div>
+        <a th:href="@{/products}" class="btn btn-outline-primary me-2">상품 관리</a>
+        <form th:action="@{/logout}" method="post" class="d-inline">
+          <input type="submit" value="로그아웃" class="btn btn-outline-secondary" />
+        </form>
+      </div>
+    </div>
+
+
+
+    <!-- 사용자 목록 미리보기 -->
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">등록된 사용자 목록</h5>
+        <small class="text-muted">전체 목록이 표시됩니다</small>
+      </div>
+      <div class="card-body">
+        <div th:if="${#lists.isEmpty(users)}" class="text-center py-3">
+          <p class="text-muted mb-0">등록된 사용자가 없습니다.</p>
+        </div>
+        <div th:unless="${#lists.isEmpty(users)}">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>이메일</th>
+                  <th>권한</th>
+                  <th>등록일</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="user : ${users}">
+                  <td th:text="${user.id}">#1</td>
+                  <td th:text="${user.email}">user@example.com</td>
+                  <td>
+                    <span th:each="role : ${user.roles}" 
+                          th:class="'badge ' + (${role.roleName == 'ROLE_ADMIN'} ? 'bg-danger' : 'bg-primary')"
+                          th:text="${#strings.replace(role.roleName, 'ROLE_', '')}">USER</span>
+                  </td>
+                  <td class="text-muted">활성</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="text-center mt-3">
+            <small class="text-muted">총 [[${#lists.size(users)}]]명의 사용자가 등록되어 있습니다.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS fragment 삽입 -->
+  <div th:insert="~{common :: commonScript}"></div>
+</body>
+</html>

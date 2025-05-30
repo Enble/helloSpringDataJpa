@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+
+<head th:insert="~{common :: commonHead}">
+  <title>접근 거부</title>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="text-center mt-5">
+          <!-- 403 에러 아이콘 -->
+          <div class="mb-4">
+            <i class="fas fa-ban fa-5x text-danger"></i>
+          </div>
+          
+          <!-- 에러 메시지 -->
+          <h1 class="display-4 text-danger mb-3">403</h1>
+          <h2 class="mb-3">접근이 거부되었습니다</h2>
+          <p class="lead text-muted mb-4">
+            이 페이지에 접근할 권한이 없습니다.<br>
+            관리자 권한이 필요한 페이지입니다.
+          </p>
+          
+          <!-- 현재 사용자 정보 -->
+          <div sec:authorize="isAuthenticated()" class="alert alert-info">
+            <p class="mb-1">
+              <strong>현재 로그인:</strong> 
+              <span sec:authentication="principal.username">user</span>
+            </p>
+            <p class="mb-0">
+              <strong>현재 권한:</strong>
+              <span th:each="authority, iterStat : ${#authentication.authorities}">
+                <span class="badge bg-secondary" th:text="${#strings.replace(authority.authority, 'ROLE_', '')}">USER</span>
+                <span th:if="${!iterStat.last}">, </span>
+              </span>
+            </p>
+          </div>
+          
+          <!-- 액션 버튼들 -->
+          <div class="d-grid gap-2 d-md-block">
+            <a th:href="@{/products}" class="btn btn-primary btn-lg me-2">
+              <i class="fas fa-list"></i> 상품 목록으로
+            </a>
+            <a th:href="@{/}" class="btn btn-outline-secondary btn-lg me-2">
+              <i class="fas fa-home"></i> 홈으로
+            </a>
+            <form th:action="@{/logout}" method="post" class="d-inline">
+              <button type="submit" class="btn btn-outline-danger btn-lg">
+                <i class="fas fa-sign-out-alt"></i> 로그아웃
+              </button>
+            </form>
+          </div>
+          
+          <!-- 도움말 -->
+          <div class="mt-5">
+            <small class="text-muted">
+              관리자 권한이 필요하시다면 시스템 관리자에게 문의하세요.
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS fragment 삽입 -->
+  <div th:insert="~{common :: commonScript}"></div>
+</body>
+</html>
